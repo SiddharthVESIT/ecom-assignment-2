@@ -21,6 +21,14 @@ export default function Home() {
     <main>
       <HeroSection />
 
+      {/* Dark → Light Transition */}
+      <div
+        style={{
+          height: '120px',
+          background: 'linear-gradient(to bottom, #0a0a0a 0%, var(--color-bg) 100%)',
+        }}
+      />
+
       {/* Brand Strip */}
       <section className="border-y border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-[1280px] mx-auto px-6 py-6 flex justify-between items-center overflow-x-auto gap-8">

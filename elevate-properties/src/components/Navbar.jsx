@@ -41,7 +41,9 @@ export default function Navbar() {
       <div className="max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <span className="font-[family-name:var(--font-display)] text-3xl tracking-wider text-[var(--color-text-primary)]">
+          <span className={`font-[family-name:var(--font-display)] text-3xl tracking-wider transition-colors duration-300 ${
+            scrolled ? 'text-[var(--color-text-primary)]' : 'text-white'
+          }`}>
             ELEVATE<span className="text-[var(--color-accent)]">ESTATES</span>
           </span>
         </Link>
@@ -55,7 +57,7 @@ export default function Navbar() {
               className={`text-sm font-medium transition-colors duration-200 hover:text-[var(--color-accent)] ${
                 location.pathname === link.path
                   ? 'text-[var(--color-accent)]'
-                  : 'text-[var(--color-text-secondary)]'
+                  : scrolled ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-accent-soft)]'
               }`}
             >
               {link.label}
@@ -66,7 +68,7 @@ export default function Navbar() {
         {/* Right side */}
         <div className="flex items-center gap-4">
           {/* Shortlist */}
-          <Link to="/products" className="relative p-2 hover:text-[var(--color-accent)] transition-colors">
+          <Link to="/products" className={`relative p-2 hover:text-[var(--color-accent)] transition-colors ${scrolled ? '' : 'text-white/80'}`}>
             <Heart size={20} />
             {itemCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-[var(--color-accent)] text-[var(--color-text-primary)] text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -104,7 +106,7 @@ export default function Navbar() {
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-[var(--color-text-primary)]"
+            className={`md:hidden p-2 transition-colors duration-300 ${scrolled ? 'text-[var(--color-text-primary)]' : 'text-white'}`}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
