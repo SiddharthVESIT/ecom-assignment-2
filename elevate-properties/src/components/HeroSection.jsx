@@ -31,7 +31,7 @@ export default function HeroSection() {
         className="absolute inset-0 will-change-transform"
       >
         <img
-          src="/hero-building.png"
+          src="/building-skyscraper-crescent-moon-starry-sky-2732x2732-352.jpg"
           alt="Luxury building at twilight"
           className="w-full h-[120%] object-cover"
           style={{ objectPosition: 'center 30%' }}
