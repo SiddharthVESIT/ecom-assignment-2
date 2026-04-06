@@ -15,7 +15,7 @@ export default function CRMPage() {
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 rounded-full text-[var(--color-accent)] text-sm font-medium mb-4">
-            Assignment Module
+            Enterprise Module
           </span>
           <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl text-[var(--color-text-primary)] tracking-wide">
             CRM <span className="gradient-text">STRATEGY</span>
@@ -187,6 +187,64 @@ export default function CRMPage() {
               <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed">{desc}</p>
             </motion.div>
           ))}
+        </div>
+
+        {/* Automated Feedback & Complaint Analysis */}
+        <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-text-primary)] tracking-wide mt-20 mb-8 border-t border-[var(--color-border)] pt-16">
+          AUTOMATED <span className="gradient-text">COMPLAINT ANALYSIS</span>
+        </h2>
+        <div className="bg-[var(--color-surface)] rounded-2xl p-8 border border-[var(--color-border)] mb-20">
+          <p className="text-[var(--color-text-secondary)] mb-8">
+            Our CRM does more than just loyalty points. We aggregate <strong>customer feedback, reviews, and complaints</strong>, processing them through our automated analysis pipeline. This system flags major anomalies for immediate review, ensuring platform stability and improving buyer experience continuously.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="p-6 bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)] border-l-4 border-l-[var(--color-accent)]">
+              <p className="text-xl font-bold">1,245</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Total Reports Analyzed (30d)</p>
+            </div>
+             <div className="p-6 bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)] border-l-4 border-l-orange-500">
+              <p className="text-xl font-bold">3</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Major Issues Flagged</p>
+            </div>
+             <div className="p-6 bg-[var(--color-bg)] rounded-xl border border-[var(--color-border)] border-l-4 border-l-green-500">
+              <p className="text-xl font-bold">98%</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">Resolution Rate</p>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-[var(--color-border)] text-xs text-[var(--color-text-secondary)] uppercase tracking-wider">
+                  <th className="px-4 py-3">Flagged Issue</th>
+                  <th className="px-4 py-3">Volume (Reports)</th>
+                  <th className="px-4 py-3">Automated Diagnosis</th>
+                  <th className="px-4 py-3">Action Status</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                <tr className="border-b border-[var(--color-border)]">
+                   <td className="px-4 py-4 font-semibold text-[var(--color-text-primary)]">Payment Gateway Unresponsive</td>
+                   <td className="px-4 py-4"><span className="text-red-400 font-bold">700</span></td>
+                   <td className="px-4 py-4 text-[var(--color-text-secondary)]">Bank node timeout during KYC verifications exceeding 5000ms.</td>
+                   <td className="px-4 py-4"><span className="px-2 py-1 bg-green-500/10 text-green-500 rounded text-xs font-bold">Fixed via failover</span></td>
+                </tr>
+                <tr className="border-b border-[var(--color-border)]">
+                   <td className="px-4 py-4 font-semibold text-[var(--color-text-primary)]">Image Loading Errors</td>
+                   <td className="px-4 py-4"><span className="text-orange-400 font-bold">142</span></td>
+                   <td className="px-4 py-4 text-[var(--color-text-secondary)]">Broken Unsplash IDs propagating through prop-001 pipeline.</td>
+                   <td className="px-4 py-4"><span className="px-2 py-1 bg-green-500/10 text-green-500 rounded text-xs font-bold">Patched IDs</span></td>
+                </tr>
+                <tr className="border-b border-[var(--color-border)]">
+                   <td className="px-4 py-4 font-semibold text-[var(--color-text-primary)]">Agent Unreachable</td>
+                   <td className="px-4 py-4"><span className="text-yellow-400 font-bold">85</span></td>
+                   <td className="px-4 py-4 text-[var(--color-text-secondary)]">Leads dropping due to weekend off-hours in Bangalore Zone.</td>
+                   <td className="px-4 py-4"><span className="px-2 py-1 bg-blue-500/10 text-blue-500 rounded text-xs font-bold">Developing AI coverage</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </main>

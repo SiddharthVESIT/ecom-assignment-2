@@ -52,7 +52,7 @@ export default function MarketingPage() {
           className="text-center mb-16"
         >
           <span className="inline-block px-4 py-1.5 bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 rounded-full text-[var(--color-accent)] text-sm font-medium mb-4">
-            Assignment Module
+            Enterprise Module
           </span>
           <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl text-[var(--color-text-primary)] tracking-wide">
             MARKETING <span className="gradient-text">STRATEGY</span>

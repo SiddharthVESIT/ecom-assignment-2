@@ -13,8 +13,10 @@ const footerLinks = [
     ]
   },
   {
-    title: 'Assignment',
+    title: 'Enterprise',
     links: [
+      { label: 'Admin ERP', path: '/admin' },
+      { label: 'Supply Chain (SCM)', path: '/scm' },
       { label: 'Revenue Model', path: '/revenue' },
       { label: 'Marketing Strategy', path: '/marketing' },
       { label: 'CRM Strategy', path: '/crm' },
@@ -22,10 +24,12 @@ const footerLinks = [
     ]
   },
   {
-    title: 'Account',
+    title: 'Account & Legal',
     links: [
       { label: 'Login', path: '/login' },
       { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Terms of Service', path: '/terms' },
+      { label: 'Privacy Policy', path: '/privacy' },
     ]
   }
 ];

@@ -10,35 +10,43 @@ export const revenueStats = {
 export const revenueStreams = [
   {
     id: 1,
-    title: "Brokerage Commissions",
-    percentage: 50,
-    description: "Our primary revenue stream — earning 1% to 2.5% commission on every property sold through our platform, driven by our extensive broker network.",
-    stats: "₹1.8Cr/month",
-    icon: "HandCoins"
-  },
-  {
-    id: 2,
-    title: "Elevate Originals Sales",
-    percentage: 30,
+    title: "Sales Revenue Model",
+    percentage: 35,
     description: "Direct sales of properties developed or exclusively owned by Elevate Estates, yielding high profit margins.",
-    stats: "₹1.1Cr/month",
+    stats: "₹1.5Cr/month",
     icon: "Building2"
   },
   {
-    id: "ads", // important for rendering
-    title: "Ad Network & Placements",
+    id: 2,
+    title: "Transaction Fee Revenue Model",
+    percentage: 30,
+    description: "Our core revenue stream — earning 1% to 2.5% transaction fee/commission on every property sold through our platform network.",
+    stats: "₹1.2Cr/month",
+    icon: "HandCoins"
+  },
+  {
+    id: "ads",
+    title: "Advertising Revenue Model",
     percentage: 15,
-    description: "Premium property placements and targeted advertisements on Instagram and our platform by developers to reach HNI buyers.",
-    stats: "₹55L/month",
+    description: "Premium property placements and targeted advertisements on our platform paid by other developers to reach our HNI buyers.",
+    stats: "₹65L/month",
     icon: "Megaphone"
   },
   {
     id: 4,
-    title: "Property Management",
-    percentage: 5,
-    description: "Recurring revenue from managing rental properties, including maintenance, tenant screening, and rent collection.",
-    stats: "₹18L/month",
+    title: "Subscription Revenue Model",
+    percentage: 10,
+    description: "Recurring subscriptions from premium tier brokers who pay monthly fees for early access to pre-launch properties and exclusive leads.",
+    stats: "₹45L/month",
     icon: "Key"
+  },
+  {
+    id: 5,
+    title: "Affiliate Revenue Model",
+    percentage: 10,
+    description: "Commissions earned by referring clients to our partnered interior designers, home loan banks, and legal advisory firms.",
+    stats: "₹45L/month",
+    icon: "Handshake"
   }
 ];
 

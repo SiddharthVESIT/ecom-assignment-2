@@ -15,11 +15,19 @@ import RevenuePage from './pages/RevenuePage';
 import MarketingPage from './pages/MarketingPage';
 import CRMPage from './pages/CRMPage';
 import SecurityPage from './pages/SecurityPage';
+import AdminDashboard from './pages/AdminDashboard';
+import SCMPage from './pages/SCMPage';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // A micro-task delay allows Lenis/React to render first, then we snap to top.
+    setTimeout(() => {
+      document.documentElement.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 0);
   }, [pathname]);
   return null;
 }
@@ -52,6 +60,10 @@ function AnimatedRoutes() {
         <Route path="/marketing" element={<PageWrapper><MarketingPage /></PageWrapper>} />
         <Route path="/crm" element={<PageWrapper><CRMPage /></PageWrapper>} />
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
+        <Route path="/admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
+        <Route path="/scm" element={<PageWrapper><SCMPage /></PageWrapper>} />
+        <Route path="/terms" element={<PageWrapper><TermsOfService /></PageWrapper>} />
+        <Route path="/privacy" element={<PageWrapper><PrivacyPolicy /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );

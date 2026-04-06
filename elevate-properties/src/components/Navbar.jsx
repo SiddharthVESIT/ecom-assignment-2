@@ -10,7 +10,9 @@ const navLinks = [
   { path: '/revenue', label: 'Revenue' },
   { path: '/marketing', label: 'Marketing' },
   { path: '/crm', label: 'CRM' },
+  { path: '/scm', label: 'SCM' },
   { path: '/security', label: 'Security' },
+  { path: '/admin', label: 'Admin' },
 ];
 
 export default function Navbar() {

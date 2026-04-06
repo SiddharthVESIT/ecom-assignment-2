@@ -5,25 +5,25 @@ import { useAuth } from '../context/AuthContext';
 
 const dummyOrders = [
   {
-    id: 'ORD-20250301',
+    id: 'INV-20250301',
     date: '2025-03-01',
-    items: ['AirStep Pro X', 'CloudRun Elite'],
-    total: 10998,
-    status: 'Delivered'
+    items: ['Skyline Oasis Penthouse - Advance'],
+    total: 2500000,
+    status: 'Invested'
   },
   {
-    id: 'ORD-20250215',
+    id: 'INV-20250215',
     date: '2025-02-15',
-    items: ['UrbanGlide Classic'],
-    total: 3499,
-    status: 'Delivered'
+    items: ['Lakeview Manor (Legal Fees)'],
+    total: 150000,
+    status: 'Completed'
   },
   {
-    id: 'ORD-20250128',
+    id: 'INV-20250128',
     date: '2025-01-28',
-    items: ['StreetFlex Hype', 'CanvasWalk Retro'],
-    total: 9498,
-    status: 'Delivered'
+    items: ['Palm Breeze Apartments - Token'],
+    total: 500000,
+    status: 'Invested'
   }
 ];
 
