@@ -10,7 +10,7 @@ export const products = [
     reviewCount: 34,
     sizes: ["3 BHK", "4 BHK", "Penthouse"],
     colors: ["Ready to Move", "Under Construction"],
-    image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf15b4?w=600&h=600&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=600&fit=crop&q=80",
     badge: "Original", // Representing our own original development 
     inStock: true,
     description: "An exclusive Elevate Original property. Experience unparalleled luxury with a 360-degree view of the city skyline, private elevator access, and a rooftop pool."
@@ -170,7 +170,7 @@ export const products = [
     reviewCount: 205,
     sizes: ["2 BHK", "3 BHK"],
     colors: ["Under Construction"],
-    image: "https://images.unsplash.com/photo-1583608205776-bfd35f6d9f07?w=600&h=600&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=600&fit=crop&q=80",
     badge: "Sale",
     inStock: true,
     description: "Sustainable living at its finest. Solar-powered common areas, zero-discharge waste management, and acres of vertical gardens."

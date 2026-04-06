@@ -56,22 +56,26 @@ export default function HeroSection() {
       <div className="absolute inset-0 pointer-events-none">
         {/* Left blur panel */}
         <div
-          className="absolute top-0 left-0 w-[35%] h-full"
+          className="absolute top-0 left-0 w-[40%] h-full"
           style={{
             background:
               'linear-gradient(to right, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.5) 60%, transparent 100%)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            maskImage: 'linear-gradient(to right, black 0%, black 40%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to right, black 0%, black 40%, transparent 100%)',
           }}
         />
         {/* Right blur panel */}
         <div
-          className="absolute top-0 right-0 w-[35%] h-full"
+          className="absolute top-0 right-0 w-[40%] h-full"
           style={{
             background:
               'linear-gradient(to left, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.5) 60%, transparent 100%)',
-            backdropFilter: 'blur(6px)',
-            WebkitBackdropFilter: 'blur(6px)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            maskImage: 'linear-gradient(to left, black 0%, black 40%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to left, black 0%, black 40%, transparent 100%)',
           }}
         />
         {/* Bottom gradient */}
