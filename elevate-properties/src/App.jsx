@@ -19,6 +19,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import SCMPage from './pages/SCMPage';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import SubscriptionModelPage from './pages/SubscriptionModelPage';
+import AffiliateModelPage from './pages/AffiliateModelPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -62,6 +64,8 @@ function AnimatedRoutes() {
         <Route path="/security" element={<PageWrapper><SecurityPage /></PageWrapper>} />
         <Route path="/admin" element={<PageWrapper><AdminDashboard /></PageWrapper>} />
         <Route path="/scm" element={<PageWrapper><SCMPage /></PageWrapper>} />
+        <Route path="/revenue/subscription" element={<PageWrapper><SubscriptionModelPage /></PageWrapper>} />
+        <Route path="/revenue/affiliate" element={<PageWrapper><AffiliateModelPage /></PageWrapper>} />
         <Route path="/terms" element={<PageWrapper><TermsOfService /></PageWrapper>} />
         <Route path="/privacy" element={<PageWrapper><PrivacyPolicy /></PageWrapper>} />
       </Routes>

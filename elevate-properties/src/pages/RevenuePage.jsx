@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { ShoppingBag, Crown, Handshake, Users, TrendingUp, IndianRupee, BarChart3, Target, HandCoins, Building2, Megaphone, Key } from 'lucide-react';
+import { ShoppingBag, Crown, Handshake, Users, TrendingUp, IndianRupee, BarChart3, Target, HandCoins, Building2, Megaphone, Key, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { revenueStats, revenueStreams, monthlyRevenue } from '../data/revenueStats';
 
 const iconMap = { ShoppingBag, Crown, Handshake, Users, HandCoins, Building2, Megaphone, Key };
@@ -89,6 +90,17 @@ export default function RevenuePage() {
                     className="h-full bg-[var(--color-accent)] rounded-full"
                   />
                 </div>
+                {/* Learn More Link for specific models */}
+                {(stream.id === 4 || stream.id === 5) && (
+                  <div className="mt-6 pt-4 border-t border-[var(--color-border)]">
+                    <Link
+                      to={stream.id === 4 ? "/revenue/subscription" : "/revenue/affiliate"}
+                      className="inline-flex items-center gap-2 text-[var(--color-accent)] hover:text-[var(--color-text-primary)] transition-colors text-sm font-medium"
+                    >
+                      Explore {stream.title} <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                )}
               </motion.div>
             );
           })}
