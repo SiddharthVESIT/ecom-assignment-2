@@ -1,7 +1,8 @@
 import { Navigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LogOut, Package, Star, Crown, ShoppingBag } from 'lucide-react';
+import { LogOut, Package, Star, Crown, ShoppingBag, Copy, Check, Share2, Gift, Users, Percent } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useState, useCallback, useEffect } from 'react';
 
 const dummyOrders = [
   {
@@ -27,8 +28,61 @@ const dummyOrders = [
   }
 ];
 
+/* ── referral helpers ── */
+function generateReferralCode(name) {
+  const prefix = (name || 'USER').split(' ').map(n => n[0]).join('').toUpperCase();
+  const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+  return `EE-${prefix}-${suffix}`;
+}
+
+function getReferralStats() {
+  // Hardcoded stats for demo — no backend
+  return { totalReferred: 4, activeCodes: 1, totalSaved: 127500 };
+}
+
+const dummyReferrals = [
+  { name: 'Riya Kapoor', date: '2025-02-10', status: 'Converted', savings: '₹85,000' },
+  { name: 'Amit Sinha', date: '2025-02-22', status: 'Converted', savings: '₹42,500' },
+  { name: 'Neha Verma', date: '2025-03-05', status: 'Pending', savings: '—' },
+  { name: 'Rahul Das', date: '2025-03-12', status: 'Signed Up', savings: '—' },
+];
+
 export default function Dashboard() {
   const { isLoggedIn, user, logout } = useAuth();
+  const [copied, setCopied] = useState(false);
+  const [referralCode, setReferralCode] = useState('');
+
+  useEffect(() => {
+    if (!user) return;
+    const stored = localStorage.getItem('elevate_referral');
+    if (stored) {
+      setReferralCode(stored);
+    } else {
+      const code = generateReferralCode(user.name);
+      localStorage.setItem('elevate_referral', code);
+      setReferralCode(code);
+    }
+  }, [user]);
+
+  const copyToClipboard = useCallback(() => {
+    navigator.clipboard.writeText(referralCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [referralCode]);
+
+  const shareReferral = useCallback(() => {
+    const shareData = {
+      title: 'Elevate Estates Referral',
+      text: `Use my referral code ${referralCode} on Elevate Estates and get 0.1% discount on your next property booking!`,
+      url: window.location.origin,
+    };
+    if (navigator.share) {
+      navigator.share(shareData);
+    } else {
+      copyToClipboard();
+    }
+  }, [referralCode, copyToClipboard]);
 
   if (!isLoggedIn) return <Navigate to="/login" replace />;
 
@@ -40,6 +94,7 @@ export default function Dashboard() {
 
   const tier = tierConfig[user?.tier] || tierConfig.Silver;
   const TierIcon = tier.icon;
+  const stats = getReferralStats();
 
   return (
     <main className="pt-24 pb-20 px-6 min-h-screen">
@@ -121,6 +176,144 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* ═══════ REFERRAL PROGRAM ═══════ */}
+          <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-text-primary)] tracking-wide mb-6">
+            REFERRAL <span className="gradient-text">PROGRAM</span>
+          </h2>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+            {/* Referral Code Card — spans 2 cols */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="lg:col-span-2 bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-bg)] rounded-2xl p-6 md:p-8 border border-[var(--color-accent)]/20 relative overflow-hidden"
+            >
+              {/* Background decoration */}
+              <div className="absolute top-0 right-0 w-48 h-48 bg-[var(--color-accent)]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
+
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-2">
+                  <Gift size={20} className="text-[var(--color-accent)]" />
+                  <h3 className="text-lg font-bold text-[var(--color-text-primary)]">Share & Earn</h3>
+                </div>
+                <p className="text-sm text-[var(--color-text-secondary)] mb-6 max-w-lg">
+                  Share your unique referral code with friends. When they sign up and book a property,
+                  they get a <strong className="text-[var(--color-accent)]">0.1% discount</strong> on the booking amount — and you earn <strong className="text-[var(--color-accent)]">bonus loyalty points</strong>!
+                </p>
+
+                {/* Code Display */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
+                  <div className="flex-1 bg-[var(--color-bg)] border-2 border-dashed border-[var(--color-accent)]/30 rounded-xl px-5 py-4 flex items-center justify-between gap-3">
+                    <code className="text-lg md:text-xl font-mono font-bold text-[var(--color-accent)] tracking-widest select-all">
+                      {referralCode}
+                    </code>
+                    <button
+                      onClick={copyToClipboard}
+                      className={`shrink-0 p-2 rounded-lg transition-all ${
+                        copied
+                          ? 'bg-green-500/10 text-green-500'
+                          : 'bg-[var(--color-accent)]/10 text-[var(--color-accent)] hover:bg-[var(--color-accent)]/20'
+                      }`}
+                      title="Copy code"
+                    >
+                      {copied ? <Check size={18} /> : <Copy size={18} />}
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={shareReferral}
+                    className="flex items-center justify-center gap-2 px-6 py-4 bg-[var(--color-accent)] text-[var(--color-text-primary)] font-semibold rounded-xl hover:bg-[var(--color-accent-soft)] transition-colors"
+                  >
+                    <Share2 size={18} />
+                    Share
+                  </button>
+                </div>
+
+                {/* Mini stats */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="bg-[var(--color-bg)] rounded-lg px-4 py-3 text-center">
+                    <Users size={16} className="text-[var(--color-accent)] mx-auto mb-1" />
+                    <p className="text-xl font-bold text-[var(--color-text-primary)]">{stats.totalReferred}</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide">Referred</p>
+                  </div>
+                  <div className="bg-[var(--color-bg)] rounded-lg px-4 py-3 text-center">
+                    <Gift size={16} className="text-green-500 mx-auto mb-1" />
+                    <p className="text-xl font-bold text-[var(--color-text-primary)]">{stats.activeCodes}</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide">Active Codes</p>
+                  </div>
+                  <div className="bg-[var(--color-bg)] rounded-lg px-4 py-3 text-center">
+                    <Percent size={16} className="text-[var(--color-gold)] mx-auto mb-1" />
+                    <p className="text-xl font-bold text-[var(--color-text-primary)]">₹{stats.totalSaved.toLocaleString()}</p>
+                    <p className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide">Savings Generated</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* How it works card */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)]"
+            >
+              <h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-5">How it Works</h3>
+              <div className="space-y-5">
+                {[
+                  { step: '1', title: 'Share Your Code', desc: 'Copy or share your unique referral code with friends and family.' },
+                  { step: '2', title: 'They Sign Up', desc: 'Your friend creates an account and enters your referral code.' },
+                  { step: '3', title: 'They Get 0.1% Off', desc: 'On their first property token booking, they get a 0.1% discount.' },
+                  { step: '4', title: 'You Earn Points', desc: 'You receive 100 bonus loyalty points per successful referral.' },
+                ].map(item => (
+                  <div key={item.step} className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-[var(--color-accent)]/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-xs font-bold text-[var(--color-accent)]">{item.step}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]">{item.title}</p>
+                      <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Referral History */}
+          <h3 className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider mb-4">Referral History</h3>
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden mb-12">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[var(--color-border)]">
+                    {['Referred User', 'Date', 'Status', 'Savings Earned'].map(h => (
+                      <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {dummyReferrals.map(ref => (
+                    <tr key={ref.name} className="border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-border)]/20 transition-colors">
+                      <td className="px-5 py-3 text-sm font-medium text-[var(--color-text-primary)]">{ref.name}</td>
+                      <td className="px-5 py-3 text-sm text-[var(--color-text-secondary)]">{ref.date}</td>
+                      <td className="px-5 py-3">
+                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${
+                          ref.status === 'Converted' ? 'bg-green-500/10 text-green-500'
+                            : ref.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-400'
+                            : 'bg-blue-500/10 text-blue-400'
+                        }`}>
+                          {ref.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-sm font-medium text-[var(--color-accent)]">{ref.savings}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Order History */}
           <h2 className="font-[family-name:var(--font-display)] text-2xl text-[var(--color-text-primary)] tracking-wide mb-6">
             ORDER HISTORY
@@ -156,7 +349,7 @@ export default function Dashboard() {
               to="/products"
               className="inline-block px-8 py-3 bg-[var(--color-accent)] text-[var(--color-text-primary)] font-semibold rounded-lg hover:bg-[var(--color-accent-soft)] transition-colors"
             >
-              Continue Shopping →
+              Explore Properties →
             </Link>
           </div>
         </motion.div>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Crown, Star, Award, Gift, Truck, MessageCircle, Mail, HeartHandshake, TrendingUp } from 'lucide-react';
+import { Crown, Star, Award, Gift, Truck, MessageCircle, Mail, HeartHandshake, TrendingUp, Trophy, Medal, Flame, Zap } from 'lucide-react';
 import { customers, tierBenefits } from '../data/customers';
 
 const tierIcons = { Bronze: Award, Silver: Star, Gold: Crown };
@@ -70,55 +70,206 @@ export default function CRMPage() {
           })}
         </div>
 
-        {/* Customer Table */}
+        {/* Leaderboard */}
         <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-text-primary)] tracking-wide mb-8">
-          CUSTOMER <span className="gradient-text">DATABASE</span>
+          CUSTOMER <span className="gradient-text">LEADERBOARD</span>
         </h2>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden mb-20"
-        >
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[var(--color-border)]">
-                  {['User', 'Role/Email', 'Tier', 'Total Vol (LTV)', 'Properties', 'Points'].map(h => (
-                    <th key={h} className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {customers.map(customer => {
+
+        {(() => {
+          const ranked = [...customers].sort((a, b) => b.points - a.points);
+          const maxPoints = ranked[0]?.points || 1;
+          const rankEmojis = ['🥇', '🥈', '🥉'];
+          const rankColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
+          const top3 = ranked.slice(0, 3);
+          const rest = ranked.slice(3);
+
+          return (
+            <>
+              {/* Top 3 Podium */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {top3.map((customer, i) => {
                   const tierColor = tierBenefits[customer.tier]?.color || '#fff';
+                  const barWidth = (customer.points / maxPoints) * 100;
                   return (
-                    <tr key={customer.id} className="border-b border-[var(--color-border)] hover:bg-[var(--color-border)]/30 transition-colors">
-                      <td className="px-6 py-4 text-sm text-[var(--color-text-primary)] font-medium">{customer.name}</td>
-                      <td className="px-6 py-4 text-sm text-[var(--color-text-secondary)]">
-                        <div>{customer.role}</div>
-                        <div className="text-xs opacity-50">{customer.email}</div>
-                      </td>
-                      <td className="px-6 py-4">
+                    <motion.div
+                      key={customer.id}
+                      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 * i, type: 'spring', stiffness: 200 }}
+                      whileHover={{ y: -4, scale: 1.02 }}
+                      className="relative bg-[var(--color-surface)] rounded-2xl p-6 border-2 transition-shadow duration-300"
+                      style={{
+                        borderColor: `${rankColors[i]}40`,
+                        boxShadow: `0 0 30px ${rankColors[i]}15`,
+                      }}
+                    >
+                      {/* Rank Badge */}
+                      <div className="absolute -top-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-lg" style={{ backgroundColor: rankColors[i], boxShadow: `0 4px 20px ${rankColors[i]}50` }}>
+                        {rankEmojis[i]}
+                      </div>
+
+                      {/* Rank Number */}
+                      <div className="text-6xl font-black opacity-[0.08] absolute top-4 left-5 font-[family-name:var(--font-display)]">
+                        #{i + 1}
+                      </div>
+
+                      {/* Avatar */}
+                      <div
+                        className="w-14 h-14 rounded-full flex items-center justify-center text-xl font-bold mb-4"
+                        style={{ background: `linear-gradient(135deg, ${rankColors[i]}30, ${rankColors[i]}10)`, color: rankColors[i] }}
+                      >
+                        {customer.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+
+                      {/* Name & Role */}
+                      <h3 className="text-lg font-bold text-[var(--color-text-primary)]">{customer.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
+                          customer.role === 'Broker'
+                            ? 'bg-[var(--color-accent)]/10 text-[var(--color-accent)]'
+                            : 'bg-blue-500/10 text-blue-400'
+                        }`}>
+                          {customer.role}
+                        </span>
                         <span
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                          className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide"
                           style={{ backgroundColor: `${tierColor}20`, color: tierColor }}
                         >
                           {customer.tier}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-[var(--color-text-primary)] font-medium">₹{(customer.ltv / 10000000).toFixed(1)} Cr</td>
-                      <td className="px-6 py-4 text-sm text-[var(--color-text-secondary)]">{customer.orders}</td>
-                      <td className="px-6 py-4 text-sm font-medium text-[var(--color-accent)]">{customer.points} ⭐</td>
-                    </tr>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="grid grid-cols-2 gap-3 mt-5">
+                        <div className="bg-[var(--color-bg)] rounded-lg px-3 py-2">
+                          <p className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide">Volume</p>
+                          <p className="text-sm font-bold text-[var(--color-text-primary)]">₹{(customer.ltv / 10000000).toFixed(1)} Cr</p>
+                        </div>
+                        <div className="bg-[var(--color-bg)] rounded-lg px-3 py-2">
+                          <p className="text-[10px] text-[var(--color-text-secondary)] uppercase tracking-wide">Properties</p>
+                          <p className="text-sm font-bold text-[var(--color-text-primary)]">{customer.orders}</p>
+                        </div>
+                      </div>
+
+                      {/* Points Bar */}
+                      <div className="mt-5">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-xs text-[var(--color-text-secondary)] flex items-center gap-1">
+                            <Zap size={12} className="text-[var(--color-accent)]" />
+                            Points
+                          </span>
+                          <span className="text-sm font-bold" style={{ color: rankColors[i] }}>
+                            {customer.points.toLocaleString()} ⭐
+                          </span>
+                        </div>
+                        <div className="h-2.5 bg-[var(--color-border)] rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${barWidth}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.2, delay: 0.2 + i * 0.15, ease: 'easeOut' }}
+                            className="h-full rounded-full"
+                            style={{ background: `linear-gradient(90deg, ${rankColors[i]}80, ${rankColors[i]})` }}
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
+              </div>
+
+              {/* Rest of the leaderboard */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] overflow-hidden mb-20"
+              >
+                {rest.map((customer, i) => {
+                  const rank = i + 4;
+                  const tierColor = tierBenefits[customer.tier]?.color || '#fff';
+                  const barWidth = (customer.points / maxPoints) * 100;
+                  return (
+                    <motion.div
+                      key={customer.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.05 * i }}
+                      className="flex flex-col sm:flex-row sm:items-center gap-4 px-6 py-5 border-b border-[var(--color-border)] last:border-b-0 hover:bg-[var(--color-border)]/20 transition-colors"
+                    >
+                      {/* Rank */}
+                      <div className="w-10 h-10 rounded-xl bg-[var(--color-bg)] flex items-center justify-center shrink-0">
+                        <span className="text-sm font-bold text-[var(--color-text-secondary)]">#{rank}</span>
+                      </div>
+
+                      {/* Avatar + Name */}
+                      <div className="flex items-center gap-3 sm:w-48">
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
+                          style={{ background: `${tierColor}15`, color: tierColor }}
+                        >
+                          {customer.name.split(' ').map(n => n[0]).join('')}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-[var(--color-text-primary)]">{customer.name}</p>
+                          <p className="text-xs text-[var(--color-text-secondary)]">{customer.email}</p>
+                        </div>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex items-center gap-2 sm:w-36">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
+                          customer.role === 'Broker'
+                            ? 'bg-[var(--color-accent)]/10 text-[var(--color-accent)]'
+                            : 'bg-blue-500/10 text-blue-400'
+                        }`}>
+                          {customer.role}
+                        </span>
+                        <span
+                          className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide"
+                          style={{ backgroundColor: `${tierColor}20`, color: tierColor }}
+                        >
+                          {customer.tier}
+                        </span>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-6 text-sm sm:w-40">
+                        <div>
+                          <p className="text-[10px] text-[var(--color-text-secondary)] uppercase">Volume</p>
+                          <p className="font-semibold text-[var(--color-text-primary)]">₹{(customer.ltv / 10000000).toFixed(1)}Cr</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-[var(--color-text-secondary)] uppercase">Deals</p>
+                          <p className="font-semibold text-[var(--color-text-primary)]">{customer.orders}</p>
+                        </div>
+                      </div>
+
+                      {/* Points Bar */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-[var(--color-text-secondary)]">Points</span>
+                          <span className="text-xs font-bold text-[var(--color-accent)]">{customer.points} ⭐</span>
+                        </div>
+                        <div className="h-2 bg-[var(--color-border)] rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${barWidth}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, delay: 0.3 + i * 0.1 }}
+                            className="h-full rounded-full bg-[var(--color-accent)]"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            </>
+          );
+        })()}
 
         {/* Tier Upgrade Progress */}
         <h2 className="font-[family-name:var(--font-display)] text-3xl text-[var(--color-text-primary)] tracking-wide mb-8">
