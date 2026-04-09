@@ -1,21 +1,20 @@
 import { Link } from 'react-router-dom';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useCart } from '../context/CartContext';
-import { useState } from 'react';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function ProductCard({ product }) {
-  const { addItem } = useCart();
-  const [liked, setLiked] = useState(false);
+  const { toggleItem, isWishlisted } = useWishlist();
+  const liked = isWishlisted(product.id);
 
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  const handleAddToCart = (e) => {
+  const handleWishlistToggle = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product, product.sizes[0], product.colors[0]);
+    toggleItem(product);
   };
 
   return (
@@ -53,25 +52,18 @@ export default function ProductCard({ product }) {
 
             {/* Wishlist Heart */}
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setLiked(!liked); }}
-              className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+              onClick={handleWishlistToggle}
+              className={`absolute top-3 right-3 w-9 h-9 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-300 ${
+                liked
+                  ? 'bg-[var(--color-accent)]/20 border border-[var(--color-accent)]/40 scale-110'
+                  : 'bg-black/50 hover:bg-black/70'
+              }`}
             >
               <Heart
                 size={16}
-                className={`transition-colors ${liked ? 'fill-[var(--color-accent)] text-[var(--color-accent)]' : 'text-[var(--color-text-primary)]'}`}
+                className={`transition-all duration-300 ${liked ? 'fill-[var(--color-accent)] text-[var(--color-accent)] scale-110' : 'text-[var(--color-text-primary)]'}`}
               />
             </button>
-
-            {/* Quick Add Overlay */}
-            <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <button
-                onClick={handleAddToCart}
-                className="w-full py-3 bg-[var(--color-accent)] text-[var(--color-text-primary)] font-semibold text-sm rounded-lg flex items-center justify-center gap-2 hover:bg-[var(--color-accent-soft)] transition-colors"
-              >
-                <ShoppingBag size={16} />
-                Add to Cart
-              </button>
-            </div>
           </div>
 
           {/* Info */}

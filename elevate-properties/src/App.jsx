@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -21,6 +21,7 @@ import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import SubscriptionModelPage from './pages/SubscriptionModelPage';
 import AffiliateModelPage from './pages/AffiliateModelPage';
+import WishlistPage from './pages/WishlistPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -68,6 +69,7 @@ function AnimatedRoutes() {
         <Route path="/revenue/affiliate" element={<PageWrapper><AffiliateModelPage /></PageWrapper>} />
         <Route path="/terms" element={<PageWrapper><TermsOfService /></PageWrapper>} />
         <Route path="/privacy" element={<PageWrapper><PrivacyPolicy /></PageWrapper>} />
+        <Route path="/wishlist" element={<PageWrapper><WishlistPage /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );
@@ -96,14 +98,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <CartProvider>
+        <WishlistProvider>
           <ScrollToTop />
           <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text-primary)]">
             <Navbar />
             <AnimatedRoutes />
             <Footer />
           </div>
-        </CartProvider>
+        </WishlistProvider>
       </AuthProvider>
     </BrowserRouter>
   );

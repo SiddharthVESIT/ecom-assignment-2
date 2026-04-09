@@ -3,18 +3,18 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Heart, Star, ArrowLeft, Check, CreditCard, ShieldCheck, IndianRupee } from 'lucide-react';
 import { products } from '../data/products';
-import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 import useRazorpay from '../hooks/useRazorpay';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const product = products.find(p => p.id === id);
-  const { addItem } = useCart();
+  const { toggleItem, isWishlisted } = useWishlist();
   const { initiatePayment, paymentStatus, setPaymentStatus } = useRazorpay();
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [added, setAdded] = useState(false);
+  const [contacted, setContacted] = useState(false);
   const [paymentId, setPaymentId] = useState(null);
 
   if (!product) {
@@ -39,11 +39,11 @@ export default function ProductDetail() {
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 3);
 
-  const handleAdd = () => {
-    addItem(product, selectedSize || product.sizes[0], selectedColor || product.colors[0]);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+  const handleWishlistToggle = () => {
+    toggleItem(product);
   };
+
+  const wishlisted = isWishlisted(product.id);
 
   const handleBookNow = () => {
     initiatePayment({
@@ -188,14 +188,14 @@ export default function ProductDetail() {
             {/* CTA Buttons */}
             <div className="flex gap-4 mt-10">
               <button
-                onClick={handleAdd}
+                onClick={() => { setContacted(true); setTimeout(() => setContacted(false), 2000); }}
                 className={`flex-1 py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-2 transition-all ${
-                  added
+                  contacted
                     ? 'bg-[var(--color-success)] text-black'
                     : 'bg-[var(--color-accent)] text-[var(--color-text-primary)] hover:bg-[var(--color-accent-soft)]'
                 }`}
               >
-                {added ? (
+                {contacted ? (
                   <>
                     <Check size={20} />
                     Broker Contacted!
@@ -207,8 +207,22 @@ export default function ProductDetail() {
                   </>
                 )}
               </button>
-              <button className="w-14 h-14 rounded-lg border border-[var(--color-border)] flex items-center justify-center hover:border-[var(--color-accent)] transition-colors">
-                <Heart size={20} className="text-[var(--color-text-secondary)]" />
+              <button
+                onClick={handleWishlistToggle}
+                className={`w-14 h-14 rounded-lg border flex items-center justify-center transition-all duration-300 ${
+                  wishlisted
+                    ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10'
+                    : 'border-[var(--color-border)] hover:border-[var(--color-accent)]'
+                }`}
+              >
+                <Heart
+                  size={20}
+                  className={`transition-all duration-300 ${
+                    wishlisted
+                      ? 'fill-[var(--color-accent)] text-[var(--color-accent)] scale-110'
+                      : 'text-[var(--color-text-secondary)]'
+                  }`}
+                />
               </button>
             </div>
 

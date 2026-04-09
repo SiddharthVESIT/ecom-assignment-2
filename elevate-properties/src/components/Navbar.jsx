@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart, User, Menu, X, LogOut } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 
 const navLinks = [
@@ -18,7 +18,7 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { itemCount } = useCart();
+  const { itemCount } = useWishlist();
   const { isLoggedIn, logout } = useAuth();
   const location = useLocation();
 
@@ -69,8 +69,8 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-4">
-          {/* Shortlist */}
-          <Link to="/products" className={`relative p-2 hover:text-[var(--color-accent)] transition-colors ${scrolled ? '' : 'text-white/80'}`}>
+          {/* Wishlist */}
+          <Link to="/wishlist" className={`relative p-2 hover:text-[var(--color-accent)] transition-colors ${scrolled ? '' : 'text-white/80'}`}>
             <Heart size={20} />
             {itemCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-[var(--color-accent)] text-[var(--color-text-primary)] text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
@@ -135,6 +135,13 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          <Link
+            to="/wishlist"
+            className="text-lg font-medium py-3 border-b border-[var(--color-border)] text-[var(--color-text-primary)] flex items-center gap-2"
+          >
+            <Heart size={18} />
+            Wishlist {itemCount > 0 && `(${itemCount})`}
+          </Link>
           {isLoggedIn ? (
             <>
               <Link to="/dashboard" className="text-lg font-medium py-3 border-b border-[var(--color-border)] text-[var(--color-text-primary)]">
