@@ -1,6 +1,8 @@
-import { motion } from 'framer-motion';
-import { Key, Star, Zap, ShieldCheck, Users, BarChart, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Key, Star, Zap, ShieldCheck, Users, BarChart, CheckCircle2, CreditCard, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import useRazorpay from '../hooks/useRazorpay';
 
 const benefits = [
   {
@@ -34,6 +36,7 @@ const plans = [
   {
     name: 'Pro Broker',
     price: '₹15,000',
+    priceNum: 15000,
     frequency: '/month',
     features: ['Access to Pre-launch Properties (24h)', '5 Exclusive Leads per month', 'Basic Analytics', 'Standard Support'],
     isPopular: false,
@@ -41,6 +44,7 @@ const plans = [
   {
     name: 'Enterprise Elite',
     price: '₹45,000',
+    priceNum: 45000,
     frequency: '/month',
     features: ['Pre-launch Properties (48h)', 'Unlimited High-Intent Leads', 'Premium Branding Badge', 'Dedicated Account Manager', 'Advanced Market Analytics'],
     isPopular: true,
@@ -48,6 +52,28 @@ const plans = [
 ];
 
 export default function SubscriptionModelPage() {
+  const { initiatePayment, paymentStatus, setPaymentStatus } = useRazorpay();
+  const [subscribedPlan, setSubscribedPlan] = useState(null);
+  const [subscriptionPaymentId, setSubscriptionPaymentId] = useState(null);
+
+  const handleSelectPlan = (plan) => {
+    initiatePayment({
+      amount: plan.priceNum,
+      description: `${plan.name} Subscription — ${plan.frequency.replace('/', '')}ly`,
+      notes: {
+        plan_name: plan.name,
+        frequency: plan.frequency,
+      },
+      onSuccess: (response) => {
+        setSubscribedPlan(plan.name);
+        setSubscriptionPaymentId(response.razorpay_payment_id);
+      },
+      onFailure: (error) => {
+        console.error('Subscription payment failed:', error);
+      },
+    });
+  };
+
   return (
     <main className="pt-24 pb-20 px-6 min-h-screen">
       <div className="max-w-[1280px] mx-auto">
@@ -209,13 +235,108 @@ export default function SubscriptionModelPage() {
                     </li>
                   ))}
                 </ul>
-                <button className={`w-full py-3 rounded-xl font-medium transition-all ${plan.isPopular ? 'bg-[var(--color-accent)] text-black hover:bg-[var(--color-accent-soft)]' : 'bg-transparent border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]'}`}>
-                  Select Plan
-                </button>
+
+                {subscribedPlan === plan.name ? (
+                  <div className="w-full py-3 rounded-xl font-medium text-center bg-[var(--color-success)]/10 text-[var(--color-success)] border border-[var(--color-success)]/30 flex items-center justify-center gap-2">
+                    <Check size={18} />
+                    Subscribed!
+                  </div>
+                ) : (
+                  <button
+                    id={`select-plan-${plan.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    onClick={() => handleSelectPlan(plan)}
+                    disabled={paymentStatus === 'processing'}
+                    className={`w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                      plan.isPopular
+                        ? 'bg-[var(--color-accent)] text-black hover:bg-[var(--color-accent-soft)]'
+                        : 'bg-transparent border border-[var(--color-border)] text-[var(--color-text-primary)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]'
+                    } disabled:opacity-60 disabled:cursor-not-allowed`}
+                  >
+                    {paymentStatus === 'processing' ? (
+                      <>
+                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Processing…
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard size={16} />
+                        Select Plan
+                      </>
+                    )}
+                  </button>
+                )}
               </motion.div>
             ))}
           </div>
+
+          {/* Razorpay Trust Badge */}
+          <p className="flex items-center justify-center gap-1.5 text-xs text-[var(--color-text-secondary)] mt-6">
+            <ShieldCheck size={14} className="text-[var(--color-success)]" />
+            All payments are secured via Razorpay · PCI DSS Compliant
+          </p>
         </div>
+
+        {/* Subscription Success Banner */}
+        <AnimatePresence>
+          {paymentStatus === 'success' && subscribedPlan && subscriptionPaymentId && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="max-w-2xl mx-auto mb-16 bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 rounded-xl p-6"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-[var(--color-success)]/20 flex items-center justify-center shrink-0">
+                  <Check size={24} className="text-[var(--color-success)]" />
+                </div>
+                <div>
+                  <h4 className="text-[var(--color-text-primary)] font-semibold text-lg">Welcome to {subscribedPlan}!</h4>
+                  <p className="text-[var(--color-text-secondary)] text-sm mt-1">
+                    Your subscription is now active. All premium features have been unlocked.
+                  </p>
+                  <div className="mt-3 flex items-center gap-2 bg-[var(--color-surface)] rounded-lg px-3 py-2 border border-[var(--color-border)]">
+                    <CreditCard size={14} className="text-[var(--color-accent)]" />
+                    <span className="text-xs text-[var(--color-text-secondary)]">Payment ID:</span>
+                    <code className="text-xs font-mono text-[var(--color-text-primary)]">{subscriptionPaymentId}</code>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Payment Failed Banner */}
+        <AnimatePresence>
+          {paymentStatus === 'failed' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="max-w-2xl mx-auto mb-16 bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 rounded-xl p-6"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-[var(--color-danger)]/20 flex items-center justify-center shrink-0">
+                  <CreditCard size={24} className="text-[var(--color-danger)]" />
+                </div>
+                <div>
+                  <h4 className="text-[var(--color-text-primary)] font-semibold text-lg">Payment Failed</h4>
+                  <p className="text-[var(--color-text-secondary)] text-sm mt-1">
+                    We couldn't process your subscription payment. Please try again.
+                  </p>
+                  <button
+                    onClick={() => setPaymentStatus('idle')}
+                    className="mt-3 text-sm font-medium text-[var(--color-accent)] hover:underline"
+                  >
+                    Try Again →
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Back Link */}
         <div className="text-center">
@@ -230,3 +351,4 @@ export default function SubscriptionModelPage() {
     </main>
   );
 }
+

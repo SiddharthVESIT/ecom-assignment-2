@@ -1,18 +1,21 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { User, Heart, Star, ArrowLeft, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Heart, Star, ArrowLeft, Check, CreditCard, ShieldCheck, IndianRupee } from 'lucide-react';
 import { products } from '../data/products';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
+import useRazorpay from '../hooks/useRazorpay';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const product = products.find(p => p.id === id);
   const { addItem } = useCart();
+  const { initiatePayment, paymentStatus, setPaymentStatus } = useRazorpay();
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [added, setAdded] = useState(false);
+  const [paymentId, setPaymentId] = useState(null);
 
   if (!product) {
     return (
@@ -29,6 +32,9 @@ export default function ProductDetail() {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  // Token booking amount = 1% of property price
+  const bookingAmount = Math.round(product.price * 0.01);
+
   const relatedProducts = products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 3);
@@ -37,6 +43,25 @@ export default function ProductDetail() {
     addItem(product, selectedSize || product.sizes[0], selectedColor || product.colors[0]);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBookNow = () => {
+    initiatePayment({
+      amount: bookingAmount,
+      description: `Token Booking — ${product.name}`,
+      notes: {
+        property_id: product.id,
+        property_name: product.name,
+        configuration: selectedSize || product.sizes[0],
+        option: selectedColor || product.colors[0],
+      },
+      onSuccess: (response) => {
+        setPaymentId(response.razorpay_payment_id);
+      },
+      onFailure: (error) => {
+        console.error('Payment failed:', error);
+      },
+    });
   };
 
   return (
@@ -160,7 +185,7 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Add to Cart */}
+            {/* CTA Buttons */}
             <div className="flex gap-4 mt-10">
               <button
                 onClick={handleAdd}
@@ -186,6 +211,100 @@ export default function ProductDetail() {
                 <Heart size={20} className="text-[var(--color-text-secondary)]" />
               </button>
             </div>
+
+            {/* Book Now — Razorpay */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mt-4"
+            >
+              <button
+                id="book-now-btn"
+                onClick={handleBookNow}
+                disabled={paymentStatus === 'processing'}
+                className="w-full py-4 rounded-lg font-semibold text-base flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-[#1a1a2e] to-[#16213e] text-white hover:from-[#16213e] hover:to-[#0f3460] disabled:opacity-60 disabled:cursor-not-allowed pulse-accent"
+              >
+                {paymentStatus === 'processing' ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Processing…
+                  </>
+                ) : (
+                  <>
+                    <CreditCard size={20} />
+                    Book Now — ₹{bookingAmount.toLocaleString()} Token
+                  </>
+                )}
+              </button>
+              <p className="flex items-center justify-center gap-1.5 text-xs text-[var(--color-text-secondary)] mt-2">
+                <ShieldCheck size={14} className="text-[var(--color-success)]" />
+                Secure payment via Razorpay · 1% token booking amount
+              </p>
+            </motion.div>
+
+            {/* Payment Success Banner */}
+            <AnimatePresence>
+              {paymentStatus === 'success' && paymentId && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="mt-6 bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 rounded-xl p-5"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-success)]/20 flex items-center justify-center shrink-0 mt-0.5">
+                      <Check size={20} className="text-[var(--color-success)]" />
+                    </div>
+                    <div>
+                      <h4 className="text-[var(--color-text-primary)] font-semibold text-lg">Booking Confirmed!</h4>
+                      <p className="text-[var(--color-text-secondary)] text-sm mt-1">
+                        Your token booking for <strong>{product.name}</strong> has been received successfully.
+                      </p>
+                      <div className="mt-3 flex items-center gap-2 bg-[var(--color-surface)] rounded-lg px-3 py-2 border border-[var(--color-border)]">
+                        <IndianRupee size={14} className="text-[var(--color-accent)]" />
+                        <span className="text-xs text-[var(--color-text-secondary)]">Payment ID:</span>
+                        <code className="text-xs font-mono text-[var(--color-text-primary)]">{paymentId}</code>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Payment Failed Banner */}
+            <AnimatePresence>
+              {paymentStatus === 'failed' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="mt-6 bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 rounded-xl p-5"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-danger)]/20 flex items-center justify-center shrink-0 mt-0.5">
+                      <CreditCard size={20} className="text-[var(--color-danger)]" />
+                    </div>
+                    <div>
+                      <h4 className="text-[var(--color-text-primary)] font-semibold text-lg">Payment Failed</h4>
+                      <p className="text-[var(--color-text-secondary)] text-sm mt-1">
+                        Something went wrong with the payment. Please try again.
+                      </p>
+                      <button
+                        onClick={() => { setPaymentStatus('idle'); handleBookNow(); }}
+                        className="mt-3 text-sm font-medium text-[var(--color-accent)] hover:underline"
+                      >
+                        Retry Payment →
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
           </motion.div>
         </div>
 
